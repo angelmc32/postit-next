@@ -30,7 +30,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/layout.jsx",
-    "pages/api/auth/[...nextauth].js"
+    "pages/api/auth/[...nextauth].js",
+    "pages/api/posts/[postId].js",
+    "app/posts/[postId]"
   ],
   "exclude": ["node_modules"]
 }

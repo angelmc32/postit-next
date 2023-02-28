@@ -92,8 +92,17 @@ body {
 body {
   color: #1f1d29;
   background-color: #f8f8f8;
-  height: 100vh;
+  min-height: 100vh;
   overflow-y: auto;
+}
+
+main {
+  min-height: calc(100vh - 64px);
+  width: 100%;
+}
+
+main > .section-container {
+  padding-top: 2rem;
 }
 
 a {
