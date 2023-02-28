@@ -24,7 +24,6 @@ export default function PostDetail(url: URL) {
     queryFn: () => getPostDetails(url.params.postId),
   });
   if (isLoading) return "Cargando...";
-  console.log(post);
   return (
     <section className="section-container w-full px-2 md:w-2/3 lg:w-1/2 xl:w-2/5">
       {post && (

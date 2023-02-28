@@ -10,6 +10,12 @@ export default async function handler(
   const session = await getServerSession(req, res, authOptions);
   const { postId } = req.query;
 
+  if (Array.isArray(postId)) {
+    return res
+      .status(400)
+      .json({ message: "Solicitud no soportada por el servidor" });
+  }
+
   if (req.method === "GET") {
     try {
       const data = await prisma.post.findUnique({
@@ -38,9 +44,7 @@ export default async function handler(
     }
   } else if (req.method === "DELETE") {
     if (!session) {
-      return res
-        .status(401)
-        .json({ message: "Please signin to create a post." });
+      return res.status(401).json({ message: "Por favor inicia sesión" });
     }
     try {
       const result = await prisma.post.delete({

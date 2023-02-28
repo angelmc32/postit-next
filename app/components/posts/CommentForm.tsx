@@ -15,6 +15,12 @@ type FormData = {
   postId: string;
 };
 
+type MutationError = {
+  response?: any;
+  data?: any;
+  errorMsg?: any;
+};
+
 export default function CommentForm({ postId }: CommentFormProps) {
   const [content, setContent] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
@@ -25,7 +31,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
     async (data: FormData) =>
       await axios.post("/api/posts/createComment", data),
     {
-      onError: (error) => {
+      onError: (error: MutationError) => {
         console.log(error);
         if (error instanceof AxiosError) {
           toast.error(error?.response?.data?.errorMsg, { id: toastCommentId });

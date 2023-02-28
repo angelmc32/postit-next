@@ -18,10 +18,16 @@ export default function PostForm() {
   const queryClient = useQueryClient();
   let toastPostId: string;
 
+  type MutationError = {
+    response?: any;
+    data?: any;
+    errorMsg?: any;
+  };
+
   const { mutate } = useMutation<Response, AxiosError, FormData, Response>(
     async (data: FormData) => await axios.post("/api/posts/createPost", data),
     {
-      onError: (error) => {
+      onError: (error: MutationError) => {
         console.log(error);
         if (error instanceof AxiosError) {
           toast.error(error?.response?.data?.errorMsg, { id: toastPostId });
