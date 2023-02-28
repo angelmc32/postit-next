@@ -12,16 +12,16 @@ export default async function handler(
     if (!session) {
       return res.status(401).json({ errorMsg: "Por favor inicia sesión" });
     }
-    const { content, title } = req.body;
-    if (!title || !content) {
+    const { content, postId } = req.body;
+    if (!content) {
       return res
         .status(403)
-        .json({ errorMsg: "Ambos campos (título, mensaje) son requeridos" });
+        .json({ errorMsg: "El contenido de tu comentario es requerido" });
     }
     if (content.length > 300) {
       return res.status(403).json({
         errorMsg:
-          "Excediste el límite de caracteres para tu mensaje (máximo 300)",
+          "Excediste el límite de caracteres para tu comentario (máximo 300)",
       });
     }
 
@@ -35,14 +35,16 @@ export default async function handler(
         .json({ errorMsg: "El usuario solicitado no existe" });
     } else {
       try {
-        const result = await prisma.post.create({
+        const result = await prisma.comment.create({
           data: {
-            title,
             content,
+            postId,
             userId: prismaUser.id,
           },
         });
-        res.status(200).json({ result, successMsg: "Se ha creado su Post" });
+        res
+          .status(200)
+          .json({ result, successMsg: "Se ha creado su Comentario" });
       } catch (error) {
         return res.status(500).json({
           error,

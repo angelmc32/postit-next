@@ -8,9 +8,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const session = await getServerSession(req, res, authOptions);
-  if (!session) {
-    return res.status(401).json({ message: "Please signin to create a post." });
-  }
   const { postId } = req.query;
 
   if (req.method === "GET") {
@@ -40,6 +37,11 @@ export default async function handler(
       });
     }
   } else if (req.method === "DELETE") {
+    if (!session) {
+      return res
+        .status(401)
+        .json({ message: "Please signin to create a post." });
+    }
     try {
       const result = await prisma.post.delete({
         where: {

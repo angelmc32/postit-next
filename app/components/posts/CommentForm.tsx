@@ -3,37 +3,42 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import Button from "../elements/Button";
 
-type FormData = {
-  title: string;
-  content: string;
+type CommentFormProps = {
+  postId: string;
 };
 
-export default function PostForm() {
+type FormData = {
+  content: string;
+  postId: string;
+};
+
+export default function CommentForm({ postId }: CommentFormProps) {
   const [content, setContent] = useState("");
-  const [title, setTitle] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
   const queryClient = useQueryClient();
-  let toastPostId: string;
+  let toastCommentId: string;
 
   const { mutate } = useMutation<Response, AxiosError, FormData, Response>(
-    async (data: FormData) => await axios.post("/api/posts/createPost", data),
+    async (data: FormData) =>
+      await axios.post("/api/posts/createComment", data),
     {
       onError: (error) => {
         console.log(error);
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.errorMsg, { id: toastPostId });
+          toast.error(error?.response?.data?.errorMsg, { id: toastCommentId });
         }
         setIsDisabled(false);
       },
       onSuccess: (data) => {
         console.log(data);
-        toast.success("Se ha creado tu Post exitosamente", { id: toastPostId });
-        queryClient.invalidateQueries(["posts"]);
+        toast.success("Se ha creado tu Post exitosamente", {
+          id: toastCommentId,
+        });
+        queryClient.invalidateQueries(["detail-post"]);
         setContent("");
-        setTitle("");
         setIsDisabled(false);
       },
     }
@@ -42,27 +47,18 @@ export default function PostForm() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsDisabled(true);
-    toastPostId = toast.loading("Creando tu Post", { id: toastPostId });
-    const formData: FormData = { title, content };
+    toastCommentId = toast.loading("Enviando tu comentario", {
+      id: toastCommentId,
+    });
+    const formData: FormData = { content, postId };
     mutate(formData);
   };
-
   return (
     <form
       onSubmit={handleSubmit}
       className="rounded-md bg-gray-200 px-4 pt-8 pb-4 md:px-6"
     >
-      <div className="mb-4 flex flex-col">
-        <input
-          className="rounded-md bg-white p-2 text-lg"
-          id="title"
-          name="title"
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="Tu idea..."
-          type="text"
-          value={title}
-        />
-      </div>
+      <h3 className="mb-4 text-lg">Escribe tu comentario</h3>
       <div className="mb-4 flex flex-col">
         <textarea
           className="rounded-md bg-white p-2 text-lg"
@@ -70,7 +66,7 @@ export default function PostForm() {
           name="content"
           onChange={(event) => setContent(event.target.value)}
           placeholder="Qué tienes en mente..."
-          rows={5}
+          rows={3}
           value={content}
         ></textarea>
       </div>
@@ -86,7 +82,7 @@ export default function PostForm() {
           classes="text-md bg-secondary-500 text-white hover:bg-secondary-250 disabled:opacity-25"
           isDisabled={isDisabled}
         >
-          Crear
+          Enviar
         </Button>
       </div>
     </form>
